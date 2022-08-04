@@ -18,11 +18,9 @@ public class ReceiveMessage {
     public static final String FINANCE_API = System.getenv("FINANCE_API");
 
     @PostMapping(value = "/receive", produces = MediaType.APPLICATION_XML_VALUE)
-    public ResponseEntity<String> receive(@RequestBody String corpo) {
-
-        var response = new RestTemplate().getForEntity(FINANCE_API + "/resume/monthly/2022/08", MonthlyResume.class).getBody();
-        var text = response != null ? response.toString() : "Sorry";
-        var body = new Body.Builder(text).build();
+    public ResponseEntity<String> receive(@RequestBody WhatsappRequest whatsappRequest) {
+        var response = new RestTemplate().getForEntity(FINANCE_API + "/resume/annual/2022/08", AnnualResume.class).getBody();
+        var body = new Body.Builder(response != null ? (response.toString() + whatsappRequest.body()) : "Sorry").build();
         var message = new Message.Builder().body(body).build();
         var messagingResponse = new MessagingResponse.Builder().message(message).build();
 
