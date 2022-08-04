@@ -8,7 +8,7 @@ public record AnnualResume(double balance, double totalRevenue, double totalExpe
         return "*_[2022]_*\n"
                 + "*_Total de Entradas:_* *R$ " + totalRevenue + "*\n"
                 + "*_Total de Saídas:_* *R$ " + totalExpenditure + "*\n"
-                + "*_Saldo do Mês:_* *R$ " + balance + "*\n"
+                + "*_Saldo do Ano:_* *R$ " + balance + "*\n\n"
                 + monthlyResumeList.toString();
     }
 }
