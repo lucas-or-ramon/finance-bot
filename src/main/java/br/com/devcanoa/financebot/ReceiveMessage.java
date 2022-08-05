@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
+import javax.servlet.http.HttpServletRequest;
+
 @RestController
 @RequestMapping
 public class ReceiveMessage {
@@ -17,9 +19,16 @@ public class ReceiveMessage {
     public static final String FINANCE_API = System.getenv("FINANCE_API");
 
     @PostMapping(value = "/receive", produces = MediaType.APPLICATION_XML_VALUE)
-    public ResponseEntity<String> receive() {
+    public ResponseEntity<String> receive(HttpServletRequest request) {
+
+        var textBody = request.getAttribute("body").toString();
+        var textFrom = request.getAttribute("from").toString();
+        var textProfileName = request.getAttribute("profileName").toString();
+
+        var req = "\nFrom: " + textFrom + "\nProfileName: " + textProfileName + "\nBody: " + textBody;
+
         var response = new RestTemplate().getForEntity(FINANCE_API + "/resume/annual/2022/08", AnnualResume.class).getBody();
-        var body = new Body.Builder(response != null ? (response.toString()) : "Sorry").build();
+        var body = new Body.Builder(response != null ? (response + "\n" + req): "Sorry").build();
         var message = new Message.Builder().body(body).build();
         var messagingResponse = new MessagingResponse.Builder().message(message).build();
 
