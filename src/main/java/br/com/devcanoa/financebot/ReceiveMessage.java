@@ -25,7 +25,7 @@ public class ReceiveMessage {
 
         switch (text.toLowerCase()) {
             case "anual" -> result = new RestTemplate().getForEntity(FINANCE_API + "/resume/annual/2022/08", AnnualResume.class).getBody().toString();
-            case "mensal" -> result = new RestTemplate().getForEntity(FINANCE_API + "/resume/monthly/2022/08", AnnualResume.class).getBody().toString();
+            case "mensal" -> result = new RestTemplate().getForEntity(FINANCE_API + "/resume/monthly/2022/08", MonthlyResume.class).getBody().toString();
             default -> result = "Erro";
         }
 
