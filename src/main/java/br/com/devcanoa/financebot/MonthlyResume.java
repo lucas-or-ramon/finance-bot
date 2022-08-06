@@ -7,9 +7,22 @@ import java.util.Locale;
 public record MonthlyResume(LocalDate date, double balance, double totalRevenue, double totalExpenditure) {
     @Override
     public String toString() {
-        return "\n\t*_[" + date.getMonth().getDisplayName(TextStyle.FULL, new Locale("pt")) + "/" + date.getYear() + "]_*\n"
-                + "\t*_Total de Entradas:_* *R$ " + totalRevenue + "*\n"
-                + "\t*_Total de Saídas:_* *R$ " + totalExpenditure + "*\n"
-                + "\t*_Saldo do Mês:_* *R$ " + balance + "*\n";
+        return "\n\t" + bold(italic(getMonthSlashYear())) + "\n"
+                + "\t" + bold(italic("Total de Entradas: ")) + bold("R$ " + totalRevenue) + "\n"
+                + "\t" + bold(italic("Total de Saídas: ")) + bold("R$ " + totalExpenditure) + "\n"
+                + "\t" + bold(italic("Saldo do Mês: ")) + bold("R$ " + balance) + "\n";
     }
+
+    public String getMonthSlashYear() {
+        return "[" + date.getMonth().getDisplayName(TextStyle.FULL, new Locale("pt")) + "/" + date.getYear() + "]";
+    }
+
+    private String bold(String text) {
+        return "*" + text + "*";
+    }
+
+    private String italic(String text) {
+        return "_" + text + "_";
+    }
+
 }
