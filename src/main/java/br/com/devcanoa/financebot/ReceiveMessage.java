@@ -8,6 +8,7 @@ import com.twilio.twiml.messaging.Message;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
@@ -22,13 +23,10 @@ public class ReceiveMessage {
     public static final String FINANCE_API = System.getenv("FINANCE_API");
 
     @PostMapping(value = "/receive", produces = MediaType.APPLICATION_XML_VALUE)
-    public ResponseEntity<String> receive(HttpServletRequest request) throws IOException {
+    public ResponseEntity<String> receive(@RequestBody String request) throws IOException {
 
-        var whatsappRequest = new ObjectMapper().readTree(request.getInputStream()).toString();
-        var req = whatsappRequest;
-
-        var response = new RestTemplate().getForEntity(FINANCE_API + "/resume/annual/2022/08", AnnualResume.class).getBody();
-        var body = new Body.Builder(response != null ? (response + "\n" + req): "Sorry").build();
+//        var response = new RestTemplate().getForEntity(FINANCE_API + "/resume/annual/2022/08", AnnualResume.class).getBody();
+        var body = new Body.Builder(request).build();
         var message = new Message.Builder().body(body).build();
         var messagingResponse = new MessagingResponse.Builder().message(message).build();
 
