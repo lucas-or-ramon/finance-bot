@@ -1,5 +1,6 @@
 package br.com.devcanoa.financebot;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.twilio.twiml.MessagingResponse;
 import com.twilio.twiml.messaging.Body;
@@ -24,7 +25,9 @@ public class ReceiveMessage {
     @PostMapping(value = "/receive", produces = MediaType.APPLICATION_XML_VALUE)
     public ResponseEntity<String> receive(HttpServletRequest request) throws IOException {
 
-        var whatsappRequest = new ObjectMapper().readValue(request.getInputStream(), WhatsappRequest.class);
+        var whatsappRequest = new ObjectMapper()
+                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+                .readValue(request.getInputStream(), WhatsappRequest.class);
         var req = whatsappRequest.toString();
 
         var response = new RestTemplate().getForEntity(FINANCE_API + "/resume/annual/2022/08", AnnualResume.class).getBody();
