@@ -3,7 +3,7 @@ package br.com.devcanoa.financebot;
 import java.util.Comparator;
 import java.util.List;
 
-public record sAnnualResume(double balance, double totalRevenue, double totalExpenditure, List<MonthlyResume> monthlyResumeList) {
+public record AnnualResume(double balance, double totalRevenue, double totalExpenditure, List<MonthlyResume> monthlyResumeList) {
 
     @Override
     public String toString() {
