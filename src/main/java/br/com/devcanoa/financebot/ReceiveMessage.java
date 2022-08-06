@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.twilio.twiml.MessagingResponse;
 import com.twilio.twiml.messaging.Body;
 import com.twilio.twiml.messaging.Message;
-import org.apache.commons.io.IOUtils;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,10 +24,8 @@ public class ReceiveMessage {
     @PostMapping(value = "/receive", produces = MediaType.APPLICATION_XML_VALUE)
     public ResponseEntity<String> receive(HttpServletRequest request) throws IOException {
 
-        var whatsappRequest = new ObjectMapper()
-                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-                .readValue(request.getInputStream(), WhatsappRequest.class);
-        var req = whatsappRequest.toString();
+        var whatsappRequest = new ObjectMapper().readTree(request.getInputStream()).toString();
+        var req = whatsappRequest;
 
         var response = new RestTemplate().getForEntity(FINANCE_API + "/resume/annual/2022/08", AnnualResume.class).getBody();
         var body = new Body.Builder(response != null ? (response + "\n" + req): "Sorry").build();
