@@ -1,20 +1,15 @@
 package br.com.devcanoa.financebot;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.twilio.twiml.MessagingResponse;
 import com.twilio.twiml.messaging.Body;
 import com.twilio.twiml.messaging.Message;
-import org.apache.commons.io.IOUtils;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
-
-import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.Properties;
 
 @RestController
 @RequestMapping
@@ -23,15 +18,20 @@ public class ReceiveMessage {
     public static final String FINANCE_API = System.getenv("FINANCE_API");
 
     @PostMapping(value = "/receive", produces = MediaType.APPLICATION_XML_VALUE)
-    public ResponseEntity<String> receive(@RequestBody String request, @RequestParam String Body) throws IOException {
+    public ResponseEntity<String> receive(@RequestParam("Body") String text,
+                                          @RequestParam("From") String from,
+                                          @RequestParam("ProfileName") String profileName) {
+        String result;
 
-//        var response = new RestTemplate().getForEntity(FINANCE_API + "/resume/annual/2022/08", AnnualResume.class).getBody();
-        var properties = new Properties();
-        properties.load(IOUtils.toInputStream(request, StandardCharsets.UTF_8));
+        switch (text.toLowerCase()) {
+            case "anual" -> result = new RestTemplate().getForEntity(FINANCE_API + "/resume/annual/2022/08", AnnualResume.class).getBody().toString();
+            case "mensal" -> result = new RestTemplate().getForEntity(FINANCE_API + "/resume/monthly/2022/08", AnnualResume.class).getBody().toString();
+            default -> result = "Erro";
+        }
 
-        var whatsappRequest = new WhatsappRequest(properties.getProperty("Body"), properties.getProperty("From"), properties.getProperty("ProfileName"));
+        var whatsappRequest = new WhatsappRequest(text, from, profileName);
 
-        var body = new Body.Builder(whatsappRequest.toString() + "         " + Body).build();
+        var body = new Body.Builder(result + "\n\n" + whatsappRequest).build();
         var message = new Message.Builder().body(body).build();
         var messagingResponse = new MessagingResponse.Builder().message(message).build();
 
