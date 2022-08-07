@@ -8,9 +8,9 @@ public record MonthlyResume(LocalDate date, double balance, double totalRevenue,
     @Override
     public String toString() {
         return "\n\t" + bold(italic(getMonthSlashYear())) + "\n"
-                + "\t" + bold(italic("Total de Entradas: ")) + bold("R$ " + totalRevenue) + "\n"
-                + "\t" + bold(italic("Total de Saídas: ")) + bold("R$ " + totalExpenditure) + "\n"
-                + "\t" + bold(italic("Saldo do Mês: ")) + bold("R$ " + balance) + "\n";
+                + "\t" + bold(italic("Total de Entradas:")) + spaceBefore(bold("R$ " + totalRevenue)) + "\n"
+                + "\t" + bold(italic("Total de Saídas:")) + spaceBefore(bold("R$ " + totalExpenditure)) + "\n"
+                + "\t" + bold(italic("Saldo do Mês:")) + spaceBefore(bold("R$ " + balance)) + "\n";
     }
 
     public String getMonthSlashYear() {
@@ -23,6 +23,10 @@ public record MonthlyResume(LocalDate date, double balance, double totalRevenue,
 
     private String italic(String text) {
         return "_" + text + "_";
+    }
+
+    private String spaceBefore(String text) {
+        return " " + text;
     }
 
 }
