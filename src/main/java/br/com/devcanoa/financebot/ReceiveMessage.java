@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.LocalDate;
 import java.util.Locale;
 
 @RestController
@@ -28,10 +29,34 @@ public class ReceiveMessage {
         switch (text.toLowerCase(Locale.forLanguageTag("pt"))) {
             case "anual" -> report = getAnnualResume();
             case "mensal" -> report = getMonthlyResume();
-            default -> report = "Escolha entre 'Anual' ou 'Mensal'";
+            default -> report = getOtherOptions(text);
         }
 
         return ResponseEntity.ok(getMessagingResponse(report));
+    }
+
+    private String getOtherOptions(String text) {
+        if (text.contains("/")) {
+            var date = getDate(text);
+
+            var revenue = new RestTemplate().getForEntity((FINANCE_API + "/revenue/resume/" + date.getYear() + "/" + date.getMonth().getValue()), RegistryList.class).getBody();
+            var expenditure = new RestTemplate().getForEntity((FINANCE_API + "/expenditure/resume/" + date.getYear() + "/" + date.getMonth().getValue()), RegistryList.class).getBody();
+
+            return revenue != null && expenditure != null
+                    ? (revenue.toString("Receitas") + expenditure.toString("Despesas"))
+                    : "Erro do Obter Receitas e Despesas";
+        }
+        return "Erro ao processar requisição :(";
+    }
+
+    private LocalDate getDate(String text) {
+        var indexOfSlash = text.indexOf("/");
+
+        var month = FinanceMonth.getOrdinalByName(text.substring(0, indexOfSlash));
+
+        var year = Integer.parseInt(text.substring(indexOfSlash + 1));
+
+        return LocalDate.of(year, month, 1);
     }
 
     private String getAnnualResume() {
